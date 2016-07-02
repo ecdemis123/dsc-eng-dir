@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ecdemis123/dsc-eng-dir#readme",
   "dependencies": {
     "cypher-stream": "^0.3.0",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "random-fixture-data": "^2.0.17"
   }
 }
