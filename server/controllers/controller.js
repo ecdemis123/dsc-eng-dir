@@ -9,9 +9,8 @@ module.exports = {
 
     neo.runCypherStatementPromise(allSquadsQuery)
     .then(squadsObject => {
-      res.json(squadsObject.squads);
-    })
-    .catch(error);
+      res.json(squadsObject[0].squads);
+    });
 
   },
   getSquad: (req, res, next) => {
@@ -29,11 +28,11 @@ module.exports = {
     const singleEngineerQuery = `MATCH (e:Engineer{name:"${req.params.name}"})-[r:INVOLVED_WITH]->(squad)
                                 WITH COLLECT ({name: squad.name, current: r.current}) AS squads, e
                                 RETURN {squads: squads, name: e.name}`
-    neo.runCypherStatementPromise(allEngineersQuery)
+    neo.runCypherStatementPromise(singleEngineerQuery)
     .then(singleEngineerObject => {
-      res.json(singleEngineerObject);
+      res.json(singleEngineerObject[0]);
     })
-    .catch(error)
+
   },
 
   getEngineers: (req, res, next) => {
@@ -41,29 +40,30 @@ module.exports = {
                                 RETURN {engineers: eng}`
     neo.runCypherStatementPromise(allEngineersQuery)
     .then(engineersObject => {
-      res.json(engineersObject.engineers);
+      res.json(engineersObject[0].engineers);
     })
-    .catch(error)
+
   },
 
   createEngineer: (req, res, next) => {
-    let engineer = {
-      props: {
-        name: req.body.name,
-        username: req.body.username
-      }
-    };
-    const addEngineerWithSquadsQuery = `MERGE (b:Engineer{props})
-                                        FOREACH (squad IN [${req.body.squads}] |
+    let squads = req.body.squads;
+    //TODO: fix cypher query, doesn't work with arrays like I thought it would
+
+    const addEngineerWithSquadsQuery = `MERGE (b:Engineer{name:${req.body.name}, username:"${req.body.username}"})
+                                        FOREACH (squad IN squads |
                                         MERGE (n:Squad{name:squad.name})
-                                        MERGE (b)-[:INVOLVED_WITH{current: squad.current}]->(n))`
-   neo.runCypherStatementPromise(addEngineerWithSquadsQuery, engineer)
-   .then(engineerWithSquads => {
-     res.json(engineerWithSquads);
+                                        MERGE (b)-[:INVOLVED_WITH{current: squad.current}]->(n))
+                                        DELETE sa
+                                        RETURN b`
+   console.log(addEngineerWithSquadsQuery)
+   neo.runCypherStatementPromise(addEngineerWithSquadsQuery, squads)
+   .then(engineer => {
+     res.json(engineer[0]);
    })
-   .catch(error);
   }
 };
+
+
 
 // function generateEngineer() {
 //   return {

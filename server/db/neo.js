@@ -6,7 +6,7 @@ const config = require('../config/config.js');
 const password = config.neoPassword;
 const username = config.neoUsername;
 
-const cypher = require('cypher-stream')(`http://${username}:${password}@${host}:${port}`);
+const cypher = require('cypher-stream')(`http://neo4j:cleocatra1@localhost:7474`);
 
 module.exports = {
   runCypherStatementPromise: (statement, params) => {
