@@ -4,7 +4,6 @@ const neo = require('../db/neo.js')
 
 module.exports = {
   getSquads: (req, res, next) => {
-
     const allSquadsQuery = `MATCH (n:Squad) WITH COLLECT (n) AS squads
                             RETURN {squads: squads}`
 
@@ -54,7 +53,6 @@ module.exports = {
         username: req.body.username
       }
     };
-
     const addEngineerWithSquadsQuery = `MERGE (b:Engineer{props})
                                         FOREACH (squad IN [${req.body.squads}] |
                                         MERGE (n:Squad{name:squad.name})
