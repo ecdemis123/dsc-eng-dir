@@ -1,6 +1,6 @@
 'use strict'
 
-const host = '159.203.239.26';
+const host = 'engineering-dir.shave.io';
 const port = 7474;
 const config = require('../config/config.js');
 const password = config.neoPassword;
