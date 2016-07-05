@@ -47,16 +47,15 @@ module.exports = {
 
   createEngineer: (req, res, next) => {
     let squads = req.body.squads;
-    //TODO: fix cypher query, doesn't work with arrays like I thought it would
-
-    const addEngineerWithSquadsQuery = `MERGE (b:Engineer{name:${req.body.name}, username:"${req.body.username}"})
-                                        FOREACH (squad IN squads |
+    const addEngineerWithSquadsQuery = `MERGE (b:Engineer{name:"${req.body.name}", username:"${req.body.username}"})
+                                        FOREACH (squad IN {squads} |
                                         MERGE (n:Squad{name:squad.name})
-                                        MERGE (b)-[:INVOLVED_WITH{current: squad.current}]->(n))
-                                        DELETE sa
+                                        MERGE (b)-[:INVOLVED_WITH{current:squad.current}]->(n))
                                         RETURN b`
-   console.log(addEngineerWithSquadsQuery)
-   neo.runCypherStatementPromise(addEngineerWithSquadsQuery, squads)
+    let squadParams = {
+      squads: squads
+    };
+   neo.runCypherStatementPromise(addEngineerWithSquadsQuery, squadParams)
    .then(engineer => {
      res.json(engineer[0]);
    })
