@@ -36,12 +36,11 @@ module.exports = {
 
   getEngineers: (req, res, next) => {
     const allEngineersQuery = `MATCH (n:Engineer) WITH COLLECT (n) AS engs
-                              WITH engs
-                              UNWIND {engs} AS e
+                              UNWIND engs AS e
                               MATCH (e)-[r:INVOLVED_WITH]->(squad)
-                              WITH COLLECT ({name: squad.name, current: r.current}) AS squads
+                              WITH COLLECT ({name: squad.name, current: r.current}) AS squads, e
                               WITH COLLECT ({name: e.name, squads: squads}) AS engineerInfo
-                              WITH COLLECT (engineerINfo) AS engineers
+                              WITH COLLECT (engineerInfo) AS engineers
                               RETURN {engineers: engineers}`
     neo.runCypherStatementPromise(allEngineersQuery)
     .then(engineersObject => {
