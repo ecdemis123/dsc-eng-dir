@@ -50,7 +50,7 @@ module.exports = {
     const addEngineerWithSquadsQuery = `MERGE (engineer:Engineer{name:"${req.body.name}", username:"${req.body.username}"})
                                         WITH engineer
                                         UNWIND {squads} AS squadData
-                                        MERGE (squad:Squad{name:squadData.name})
+                                        MATCH (squad:Squad{name:squadData.name})
                                         MERGE (engineer)-[:INVOLVED_WITH{current:squadData.current}]->(squad)
                                         RETURN engineer`
     let squadParams = {
